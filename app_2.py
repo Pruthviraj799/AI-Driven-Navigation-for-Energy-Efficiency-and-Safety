@@ -269,10 +269,11 @@ if uploaded_file is not None:
             base_vis, path, status_text, path_color = process_frame(image, backbone, head, transform, planner)
             
             # ANIMATION LOOP
+           # ANIMATION LOOP (CLOUD OPTIMIZED)
             if path:
-                # Convert path list to numpy for drawing
-                # CHANGE 1: We use step=2 (instead of 5) to make it smoother and slower
-                for i in range(1, len(path) + 1, 2):
+                # OPTIMIZATION: Step=10 means we skip 9 points and draw the 10th.
+                # This reduces network lag significantly so the animation actually plays.
+                for i in range(1, len(path) + 1, 10):
                     temp_vis = base_vis.copy()
                     
                     # Get current sub-path
@@ -288,10 +289,10 @@ if uploaded_file is not None:
                         
                     image_placeholder.image(temp_vis, use_container_width=True)
                     
-                    # CHANGE 2: Increase sleep to 0.05 (or higher) to slow it down
-                    time.sleep(0.05) 
+                    # SLOWER SPEED: Gives the internet time to deliver the frame
+                    time.sleep(0.1) 
                 
-                # Ensure final frame is drawn completely
+                # Ensure the FINAL frame is drawn perfectly at the end
                 pts = np.array(path, np.int32).reshape((-1, 1, 2))
                 cv2.polylines(base_vis, [pts], isClosed=False, color=(255, 255, 0), thickness=6)
                 cv2.circle(base_vis, path[-1], 15, path_color, -1)
@@ -333,4 +334,5 @@ st.markdown("""
     </ul>
     <p style="font-size: 0.8em; color: gray;">Hackathon Edition v1.0</p>
 </div>
+
 """, unsafe_allow_html=True)
