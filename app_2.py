@@ -270,10 +270,11 @@ if uploaded_file is not None:
             
             # ANIMATION LOOP
            # ANIMATION LOOP (CLOUD OPTIMIZED)
+           # ANIMATION LOOP (ULTRA SLOW & STABLE)
             if path:
-                # OPTIMIZATION: Step=10 means we skip 9 points and draw the 10th.
-                # This reduces network lag significantly so the animation actually plays.
-                for i in range(1, len(path) + 1, 10):
+                # We use a smaller step (5) to make it smoother
+                # But we use a MUCH longer sleep (0.2) to force the display
+                for i in range(1, len(path) + 1, 5):
                     temp_vis = base_vis.copy()
                     
                     # Get current sub-path
@@ -289,15 +290,15 @@ if uploaded_file is not None:
                         
                     image_placeholder.image(temp_vis, use_container_width=True)
                     
-                    # SLOWER SPEED: Gives the internet time to deliver the frame
-                    time.sleep(0.1) 
+                    # FORCE UPDATE: Sleep for 0.25 seconds (very slow)
+                    # This gives the browser plenty of time to render the frame
+                    time.sleep(0.25) 
                 
-                # Ensure the FINAL frame is drawn perfectly at the end
+                # Final Frame
                 pts = np.array(path, np.int32).reshape((-1, 1, 2))
                 cv2.polylines(base_vis, [pts], isClosed=False, color=(255, 255, 0), thickness=6)
                 cv2.circle(base_vis, path[-1], 15, path_color, -1)
                 image_placeholder.image(base_vis, use_container_width=True)
-
     # System Logs
     st.markdown("### 📝 SYSTEM LOGS")
     log_text = f"""
@@ -336,3 +337,4 @@ st.markdown("""
 </div>
 
 """, unsafe_allow_html=True)
+
